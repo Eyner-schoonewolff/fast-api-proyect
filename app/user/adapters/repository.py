@@ -1,51 +1,39 @@
 import abc
 from app.user.domain import model
 from sqlalchemy.orm import Session
-from app.user.adapters.orm import users  # Import the users table
-from sqlalchemy import insert, select
+from app.user.adapters.orm import users
+from sqlalchemy import insert
 
-class AbstractRepository(abc.ABC):
 
-    def __init__(self) -> None:
-        self.seen = set()
-
-    def add(self, user: model.User) -> model.User:
-        self._add(user)
-        self.seen.add(user)
-        return user
-
-    def get(self, sku) -> model.User:
-        user = self._get(sku)
-        if user:
-            self.seen.add(user)
-        return user
-
+class UserRepository(abc.ABC):
     @abc.abstractmethod
-    def _add(self, user: model.User):
+    def add(self, user: model.User):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def _get(self, user: model.User):
+    def get(self, user: model.User):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def get_by_email(self, user: str):
         raise NotImplementedError
 
 
-class SqlAlchemyRepository(AbstractRepository):
-    
-    def __init__(self,session:Session) -> None:
-        super().__init__()
+class SqlAlchemyRepository(UserRepository):
+    def __init__(self, session: Session) -> None:
         self.session = session
 
-    def _add(self, user: model.User):
-        
-        stmt = insert(users).values(
-            name = user.name,
-            password = user.password
-        )
+    def add(self, user: model.User) -> model.User:
+        stmt = insert(users).values(**user.__dict__)
         self.session.execute(stmt)
         self.session.commit()
-        
         return user
-        
 
-    def _get(self, sku):
-        return self.session.query(model.User).filter_by(sku=sku).first()
+    def get(self):
+        pass
+
+    def get_by_email(self, email: str) -> model.User | None:
+        user = self.session.query(users).filter_by(email=email.strip()).first()
+        if user:
+            return model.User(**user._asdict())
+        return None

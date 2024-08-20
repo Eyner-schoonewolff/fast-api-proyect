@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.user.entrypoints.app import user
+from app.user.entrypoints.app import user_api_router
 from app.database.db import metadata, database, engine
 
 metadata.create_all(engine)
@@ -17,4 +17,4 @@ async def shutdown():
     await database.disconnect()
 
 
-app.include_router(user, prefix="/api/v1/users", tags=["users"])
+app.include_router(user_api_router, prefix="/api/v1/user", tags=["user"])
