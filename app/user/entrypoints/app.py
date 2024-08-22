@@ -58,7 +58,6 @@ def auth_user(request: requests.Auth):
         )
 
     except Exception as e:
-        error_traceback = traceback.format_exc()
         raise HTTPException(
-            status_code=500, detail=f"Error: {str(e)}, Traceback: {error_traceback}"
+            status_code=500, detail=f"Error: {str(e)}, Traceback: {traceback.format_exc()}"
         )

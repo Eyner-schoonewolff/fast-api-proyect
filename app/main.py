@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.user.entrypoints.app import user_api_router
+from app.notification.entrypoints.app import notification_api_router
 from app.database.db import metadata, database, engine
 
 metadata.create_all(engine)
@@ -18,3 +19,4 @@ async def shutdown():
 
 
 app.include_router(user_api_router, prefix="/api/v1/user", tags=["user"])
+app.include_router(notification_api_router, prefix="/api/v1/notification", tags=["notification"])
