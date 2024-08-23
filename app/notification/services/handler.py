@@ -1,4 +1,4 @@
-from app.notification.domain import model
+from app.notification.domain import model, exceptions
 from app.notification.adapters import repository
 from app.notification.services import requests, responses
 from sqlalchemy.orm import sessionmaker
@@ -34,10 +34,56 @@ class NotificationService:
 
         return responses.ResponseNotification(**create_notification.model_dump())
 
-    def get_notifications(
-        self, request: requests.GetNotificationByUserId
-    ) -> list[responses.NotificationUser]:
+    def get_notification(self, id: int) -> responses.NotificationUser:
         with self.sessionLocal() as session:
             repo = repository.SqlAlchemyRepository(session=session)
-            notifications = repo.get_by_user(id=request.user_id)
+            notification = repo.get_by_notification(id=id)
+        return notification
+
+    def get_notifications(self, user_id: int) -> list[responses.NotificationUser]:
+        with self.sessionLocal() as session:
+            repo = repository.SqlAlchemyRepository(session=session)
+            notifications = repo.get_by_user(user_id=user_id)
         return notifications
+
+    def update_notification_status(
+        self, request: requests.UpdateNotificationStatus
+    ) -> None:
+        session = self.sessionLocal()
+        try:
+            repo = repository.SqlAlchemyRepository(session=session)
+            repo.update_status(id=request.id, status=request.status)
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise Exception(f"problema de:{str(e)}")
+        finally:
+            session.close()
+
+    def update_all_notifications(
+        self, request: requests.UpdateAllNotificationById
+    ) -> None:
+        session = self.sessionLocal()
+
+        try:
+            repo = repository.SqlAlchemyRepository(session=session)
+            repo.update_all_status(user_id=request.user_id, status=request.status)
+
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise Exception(f"problema de:{str(e)}")
+        finally:
+            session.close()
+
+    def deleted_notification(self, request: requests.NotificationById) -> None:
+
+        session = self.sessionLocal()
+
+        try:
+            repo = repository.SqlAlchemyRepository(session=session)
+            repo.deleted(id=request.id)
+
+        except SQLAlchemyError as e:
+            session.rollback()
+            raise Exception(f"problema de:{str(e)}")
+        finally:
+            session.close()

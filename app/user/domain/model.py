@@ -1,11 +1,11 @@
-from pydantic import BaseModel, field_validator
+import pydantic
 from app.user.domain import exceptions
 import hashlib
 import re
 from typing import Optional
 
 
-class User(BaseModel):
+class User(pydantic.BaseModel):
     id: Optional[int] = None
     name: str
     password: str
@@ -14,7 +14,7 @@ class User(BaseModel):
     document: int
     id_rol: int
 
-    @field_validator("password")
+    @pydantic.field_validator("password")
     def validate_password(cls, password: str) -> str:
 
         if len(password) < 8:
