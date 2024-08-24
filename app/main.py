@@ -2,11 +2,21 @@ from fastapi import FastAPI
 from app.user.entrypoints.app import user_api_router
 from app.notification.entrypoints.app import notification_api_router
 from app.database.db import metadata, database, engine
-
+import fastapi.middleware.cors as cors
 
 metadata.create_all(engine)
 
 app = FastAPI()
+
+
+
+app.add_middleware(
+    cors.CORSMiddleware,
+    allow_origins=["*"],  # Permitir solicitudes desde cualquier origen
+    allow_credentials=True,
+    allow_methods=["*"],  # Permitir todos los métodos HTTP
+    allow_headers=["*"],  # Permitir todas las cabeceras
+)
 
 
 @app.on_event("startup")

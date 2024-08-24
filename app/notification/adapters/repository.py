@@ -77,7 +77,6 @@ class SqlAlchemyRepository(NotificationRepository):
         )
 
     def get_by_user(self, user_id: int) -> list[model.NotificationUser]:
-        print(user_id)
         join_condition = sql.join(
             orm.notifications,
             user_orm.users,
@@ -100,8 +99,7 @@ class SqlAlchemyRepository(NotificationRepository):
             .where(
                 sql.and_(
                     orm.notifications.c.user_id == user_id,
-                    orm.notifications.c.deleted
-                    == model.NotificationIsDeleted.ACTIVE.value,
+                    orm.notifications.c.deleted == model.NotificationIsDeleted.ACTIVE.value,
                 )
             )
         )

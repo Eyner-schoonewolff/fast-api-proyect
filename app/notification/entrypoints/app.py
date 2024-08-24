@@ -53,7 +53,7 @@ def get_notifications(
         if not notifications:
             return JSONResponse(
                 {
-                    "notification": "no",
+                    "notifications": notifications,
                     "detail": "Este usuario no tiene notificaciones registradas",
                 },
                 status_code=200,

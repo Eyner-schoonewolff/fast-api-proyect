@@ -1,4 +1,4 @@
-from app.notification.domain import model, exceptions
+from app.notification.domain import model
 from app.notification.adapters import repository
 from app.notification.services import requests, responses
 from sqlalchemy.orm import sessionmaker

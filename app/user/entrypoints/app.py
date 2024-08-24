@@ -16,10 +16,11 @@ def create_users(request: requests.CreateUser):
     try:
         response = user_service.create_user(request=request)
 
-        if response is None:
+        if not response:
             return JSONResponse(
                 {
-                    "user": "no",
+                    "user": None,
+                    "response": "no",
                     "detail": "No pudo ser registrado.",
                 },
                 status_code=404,
@@ -28,6 +29,7 @@ def create_users(request: requests.CreateUser):
         return JSONResponse(
             {
                 "user": response.model_dump(),
+                "response": "ok",
                 "detail": "Registrado correctamente.",
             },
             201,

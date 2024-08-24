@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 from app.database.db import engine
 
+
 class UserService:
     def __init__(self) -> None:
         self.sessionLocal = sessionmaker(bind=engine)
@@ -18,7 +19,10 @@ class UserService:
             repo = repository.SqlAlchemyRepository(session=session)
             user = repo.get_by_email(email=request.email)
 
-            if not user.authenticate(request.password):
+            if not user:
+                return None
+
+            if not user.authenticate(request.password) or not user:
                 return None
 
         except SQLAlchemyError as e:
