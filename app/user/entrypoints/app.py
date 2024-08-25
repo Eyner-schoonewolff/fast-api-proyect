@@ -1,5 +1,4 @@
 from fastapi import APIRouter, HTTPException, Depends
-from fastapi_jwt import JwtAccessBearer
 from app.user.services.handler import UserService
 from app.user.services import requests
 from fastapi.responses import JSONResponse
